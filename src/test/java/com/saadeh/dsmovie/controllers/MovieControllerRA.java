@@ -12,6 +12,9 @@ import java.util.Map;
 
 import static io.restassured.RestAssured.*;
 import static io.restassured.matcher.RestAssuredMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.*;
 
 public class MovieControllerRA {
@@ -86,7 +89,9 @@ public class MovieControllerRA {
         given()
                 .get("/movies/{id}",nonExistingMovieId)
                 .then()
-                .statusCode(404);
+                .statusCode(404)
+                .body("error", equalTo("Recurso não encontrado"))
+                .body("status", equalTo(404));
     }
 
     @Test
@@ -102,7 +107,11 @@ public class MovieControllerRA {
                 .when()
                 .post("/movies")
                 .then()
-                .statusCode(201);
+                .statusCode(201)
+                .body("title", equalTo("The Witcher"))
+                .body("score", is(4.5F))
+                .body("count",is(2))
+                .body("image",equalTo("https://www.themoviedb.org/t/p/w533_and_h300_bestv2/jBJWaqoSCiARWtfV0GlqHrcdidd.jpg"));
     }
 
     @Test
