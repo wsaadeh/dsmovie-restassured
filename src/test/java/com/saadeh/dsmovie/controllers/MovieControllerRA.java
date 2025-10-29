@@ -2,7 +2,8 @@ package com.saadeh.dsmovie.controllers;
 
 import com.saadeh.dsmovie.tests.TokenUtil;
 import io.restassured.http.ContentType;
-import org.json.JSONObject;
+
+import org.json.simple.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -106,16 +107,50 @@ public class MovieControllerRA {
 
     @Test
     public void insertShouldReturnUnprocessableEntityWhenAdminLoggedAndBlankTitle() throws Exception{
+        postMovieInstance.put("title", "    ");
+        JSONObject newMovie = new JSONObject(postMovieInstance);
 
+        given()
+                .header("Content-type","application/json")
+                .header("Authorization", "Bearer " + adminToken )
+                .body(newMovie)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .when()
+                .post("/movies")
+                .then()
+                .statusCode(422);
     }
 
     @Test
     public void insertShouldReturnForbiddenWhenClientLogged() throws Exception{
+        JSONObject newMovie = new JSONObject(postMovieInstance);
 
+        given()
+                .header("Content-type","application/json")
+                .header("Authorization", "Bearer " + clientToken )
+                .body(newMovie)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .when()
+                .post("/movies")
+                .then()
+                .statusCode(403);
     }
 
     @Test
     public void insertShouldReturnUnauthorizedWhenInvalidToken() throws Exception{
+        JSONObject newMovie = new JSONObject(postMovieInstance);
 
+        given()
+                .header("Content-type","application/json")
+                .header("Authorization", "Bearer " + invalidToken )
+                .body(newMovie)
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .when()
+                .post("/movies")
+                .then()
+                .statusCode(401);
     }
 }
